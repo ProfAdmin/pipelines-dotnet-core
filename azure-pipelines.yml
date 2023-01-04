@@ -6,7 +6,7 @@
 trigger:
 - master
 
-pool: Default
+pool: Docker-windows
   #vmImage: ubuntu-latest
 
 variables:
@@ -43,9 +43,9 @@ steps:
     appName: 'ag-net-core'
     package: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Container Registry ag0ideveloper'
-    repository: 'dockertest'
-    command: 'buildAndPush'
-    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
+#- task: Docker@2
+#  inputs:
+#    containerRegistry: 'Container Registry ag0ideveloper'
+#    repository: 'dockertest'
+#    command: 'buildAndPush'
+#    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
