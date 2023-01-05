@@ -6,13 +6,17 @@
 trigger:
 - master
 
-pool: Default
+pool: Docker-windows
   #vmImage: ubuntu-latest
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '7.x'
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
@@ -44,9 +48,9 @@ steps:
     appName: 'ag-net-core'
     package: '$(System.DefaultWorkingDirectory)/**/*.zip'
 
-- task: Docker@2
-  inputs:
-    containerRegistry: 'Container Registry ag0ideveloper'
-    repository: 'dockertest'
-    command: 'buildAndPush'
-    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
+#- task: Docker@2
+#  inputs:
+#    containerRegistry: 'Container Registry ag0ideveloper'
+#    repository: 'dockertest'
+#    command: 'buildAndPush'
+#    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
