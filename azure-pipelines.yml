@@ -6,51 +6,37 @@
 trigger:
 - master
 
-pool: Docker-windows
+pool: Default
   #vmImage: ubuntu-latest
 
 variables:
   buildConfiguration: 'Release'
 
 steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '7.x'
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: Build
   inputs:
-    command: publish
-    publishWebProjects: True
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory)'
-    zipAfterPublish: True
+    command: build
+    projects: '**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)' # Update this to match your need
 
 # this code takes all the files in $(Build.ArtifactStagingDirectory) and uploads them as an artifact of your build.
 - task: PublishPipelineArtifact@1
   inputs:
     targetPath: '$(Build.ArtifactStagingDirectory)' 
-    artifactName: 'myWebsiteName'
+    artifactName: 'myProjectName'
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
+
+# ...
+# do this after other tasks such as building
 - task: DotNetCoreCLI@2
   inputs:
-    command: 'publish'
-    publishWebProjects: true
-    
-- task: AzureWebApp@1
-  inputs:
-    azureSubscription: 'Azure subscription 1(c17d4207-e763-47a0-a5e8-13c3c8a4fafb)'
-    appType: 'webAppLinux'
-    appName: 'ag-net-core'
-    package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-
-#- task: Docker@2
-#  inputs:
-#    containerRegistry: 'Container Registry ag0ideveloper'
-#    repository: 'dockertest'
-#    command: 'buildAndPush'
-#    Dockerfile: '$(Build.SourcesDirectory)/app/Dockerfile'
+    command: test
+    projects: '**/*Tests/*.csproj'
+    arguments: '--configuration $(buildConfiguration) --collect "Code coverage"'
